@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Health Check</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Health Check</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>API Endpoint</th>
+        <th>Version</th>
+        <th>Date</th>
+        <th>.NET Framework</th>
+      </tr>
+    </thead>
+    <tbody id="api-table">
+      <!-- Dynamic rows will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Lista endpointów
+    const endpoints = [
+      "https://myapi1.com/healthcheck",
+      "https://myapi2.com/healthcheck"
+    ];
+
+    // Referencja do tabeli
+    const tableBody = document.getElementById("api-table");
+
+    // Funkcja pobierająca dane z API
+    async function fetchAPIData(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Request failed");
+        return await response.json();
+      } catch (error) {
+        return { error: "loading error" };
+      }
+    }
+
+    // Funkcja generująca wiersz tabeli
+    function createTableRow(apiUrl, data) {
+      const row = document.createElement("tr");
+
+      // Kolumna: API Endpoint
+      const endpointCell = document.createElement("td");
+      endpointCell.textContent = apiUrl;
+      row.appendChild(endpointCell);
+
+      // Kolumny: dane API lub błąd
+      ["version", "date", "dotnet"].forEach(key => {
+        const cell = document.createElement("td");
+        cell.textContent = data.error ? "loading error" : data[key];
+        if (data.error) cell.classList.add("error");
+        row.appendChild(cell);
+      });
+
+      tableBody.appendChild(row);
+    }
+
+    // Pobierz dane dla każdego endpointu i dodaj wiersz do tabeli
+    async function loadAPIData() {
+      for (const endpoint of endpoints) {
+        const data = await fetchAPIData(endpoint);
+        createTableRow(endpoint, data);
+      }
+    }
+
+    // Inicjalizacja
+    loadAPIData();
+  </script>
+</body>
+</html>
