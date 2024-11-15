@@ -2,4 +2,4 @@
 
 ## Spis treści
 
-1. [Lista środowisk](./deployments/index.html)
+1. [Lista środowisk](./deployments/README.md)
